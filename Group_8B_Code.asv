@@ -20,8 +20,11 @@ carrier_mass = [10 1]; % kg
 
 g = 9.81; % m/s^2
 
+
+
+
 %% RUN SIMULATION
-% Number of points on the vacuum vs. velocity graph
+% Number of points on the length vs. velocity graph
 n_pts = 20;
 
 % Setup arrays for storing carrier length and terminal velocity
@@ -34,10 +37,10 @@ system_parameters = [ ];
 % Store all variations in system parameters for easy access during loop
 system_variations = [ ];
 
-% Loop for each vacuum pressure
+% Loop for each carrier length
 for m = 1:n_pts
     % Calculate estimate exit velocity for that vacuum pressure
-    terminal_velocity(m,2) = modelTube(,system_parameters,false);
+    terminal_velocity(m,2) = modelTube(carrier_length,system_parameters,false);
     
     % Initialize variables for storing variations caused by each parameter
     max_error = 0;

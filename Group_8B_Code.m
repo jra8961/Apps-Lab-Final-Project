@@ -20,6 +20,7 @@ carrier_mass = [10 1]; % kg
 
 g = 9.81; % m/s^2
 
+
 %% RUN SIMULATION
 % Number of points on the length vs. velocity graph
 n_pts = 20;
