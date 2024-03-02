@@ -9,12 +9,12 @@ clc; clear; close all;
 % USE FORMAT : [estimate_value uncertainty]
 
 % Room Temp and Atmospheric Pressure Air
-room_temp = [22 1]; % C
+room_temp = [20 2]; % C
 p_atmos = [101.3 2] * 10^3; % Pa
 
 % Dynamic viscosity of air
 % SOURCE: https://www.engineeringtoolbox.com/air-absolute-kinematic-viscosity-d_601.html
-air_viscosity = [1.822 0.0001822] *10^-5; %N*s/m2
+air_viscosity = [18.22 0.001822] *10^-6; %N*s/m2
 
 % Tube Dimensions
 tube_diameter = [1.75 0.005] * 0.0254; % in -> m
@@ -82,14 +82,10 @@ for m = 1:n_pts
     terminal_velocity(m,3) = terminal_velocity(m,2) + sqrt(max_error);
 end
 
-modelTube(max_carrier_length,system_parameters,true);
+modelTube(min_carrier_length,system_parameters,true);
 
 figure();
-hold on
 plot(carrier_length,terminal_velocity(:,2));
-plot(carrier_length,terminal_velocity(:,1),'--');
-plot(carrier_length,terminal_velocity(:,3),'--');
-hold off
 
 %% FUNCTIONS
 % Calculate density of air as a function of temperature and pressure using ideal gas law
@@ -133,8 +129,8 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
     room_density = calcAirDensity(p_atm, room_T);
 
 % TIME DEPENDENT VARIABLES
-    n_steps = 90000; % Number of steps in the loop
-    delta_t = 0.0001;  % Amount of time between each step
+    n_steps = 500; % Number of steps in the loop
+    delta_t = 0.005;  % Amount of time between each step
 
     time = zeros(n_steps,1);
     position = zeros(n_steps,1);
