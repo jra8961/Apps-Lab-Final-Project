@@ -10,14 +10,14 @@ clc; clear; close all;
 
 % Room Temp and Atmospheric Pressure Air
 room_temp = [22 1]; % C
-p_atmos = [101.3 2] * 10^3; % Pa
+p_atmos = [101.3 1] * 10^3; % Pa
 
 % Dynamic viscosity of air
 % SOURCE: https://www.engineeringtoolbox.com/air-absolute-kinematic-viscosity-d_601.html
 air_viscosity = [1.822 0.0001822] *10^-5; %N*s/m2
 
 % Tube Dimensions
-tube_diameter = [1.75 0.005] * 0.0254; % in -> m
+tube_diameter = [1.75 0.012] * 0.0254; % in -> m
 tube_length = [48 0.5] * 0.0254; % in -> m
 
 % Carrier Dimensions
@@ -82,14 +82,29 @@ for m = 1:n_pts
     terminal_velocity(m,3) = terminal_velocity(m,2) + sqrt(max_error);
 end
 
+%% PLOTTING
+% Sample plot of carrier position, velocity, and acceleration
 modelTube(max_carrier_length,system_parameters,true);
 
+% Flip velocity to make the plot easier to read
+terminal_velocity = -terminal_velocity;
+
+% Plot of carrier length vs. terminal velocity
 figure();
 hold on
+% Estimate velocity
 plot(carrier_length,terminal_velocity(:,2));
+% Error bounds of estimate
 plot(carrier_length,terminal_velocity(:,1),'--');
 plot(carrier_length,terminal_velocity(:,3),'--');
 hold off
+
+% Make figure look pretty
+grid on;
+xlabel("Carrier Length [m]"); ylabel("Terminal Velocity [m/s]");
+legend("Estimated Results", "Min Uncertainty Bound", "Max Uncertainty Bound");
+ylim([0 0.2]);
+legend("Location","northeast");
 
 %% FUNCTIONS
 % Calculate density of air as a function of temperature and pressure using ideal gas law
