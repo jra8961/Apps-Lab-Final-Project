@@ -28,7 +28,7 @@ max_carrier_length = 0.15; % m
 
 %% RUN SIMULATION
 % Number of points on the length vs. velocity graph
-n_pts = 10;
+n_pts = 20;
 
 % Setup arrays for storing carrier length and terminal velocity
 terminal_velocity = zeros(n_pts,3);
@@ -68,11 +68,11 @@ for m = 1:n_pts
         % Determine which is positive and add to corrisponding error sum
         % Values are squared here for RSS combination of errors. Square root is later in code
         if (temp_error_1 > 0 && temp_error_2 < 0)
-            max_error = max_error + temp_error_1^2;
-            min_error = max_error + temp_error_2^2;
+            max_error = max_error + system_variations(n)*temp_error_1^2;
+            min_error = max_error + system_variations(n)*temp_error_2^2;
         elseif (temp_error_1 < 0 && temp_error_2 > 0)
-            max_error = max_error + temp_error_2^2;
-            min_error = max_error + temp_error_1^2;
+            max_error = max_error + system_variations(n)*temp_error_2^2;
+            min_error = max_error + system_variations(n)*temp_error_1^2;
         end
     end
 
@@ -101,7 +101,7 @@ grid on;
 xlabel("Carrier Length [m]"); ylabel("Terminal Velocity [m/s]");
 legend("Estimated Results", "Min Uncertainty Bound", "Max Uncertainty Bound");
 %ylim([0 0.2]);
-legend("Location","southeast");
+legend("Location","northeast");
 
 %% FUNCTIONS
 % Calculate density of air as a function of temperature and pressure using ideal gas law
@@ -174,7 +174,7 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
 
 % MAIN EULER CALCULATION LOOP
     n = 1;
-    while (percent_change > 10^-11) && (abs(position(n)) < tube_len)
+    while (percent_change > 10^-9) && (abs(position(n)) < tube_len)
         % Calculate new current time
         time(n+1) = delta_t * n;
 
