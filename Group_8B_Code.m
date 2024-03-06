@@ -240,7 +240,7 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
         % Make plot look pretty
         grid on;
         xlabel("Time [s]"); ylabel("Position [m]");
-        title("POSITION");
+        title("Carrier Position");
 
         % Plot velocity of the carrier
         subplot(3,1,2);
@@ -248,7 +248,7 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
         % Make plot look pretty
         grid on;
         xlabel("Time [s]"); ylabel("Velocity [m/s]");
-        title("VELOCITY");
+        title("Carrier Velocity");
 
         % Plot another thing - You decide!
         subplot(3,1,3);
@@ -256,6 +256,6 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
         % Make plot look pretty
         grid on;
         xlabel("Time [s]"); ylabel("m/s2"); 
-        title("ACCEL");
+        title("Carrier Acceleration");
     end
 end
