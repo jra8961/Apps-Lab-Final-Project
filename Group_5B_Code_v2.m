@@ -16,7 +16,7 @@ p_atmos = [101.3 1] * 10^3; % Pa
 
 % Dynamic viscosity of air
 % SOURCE: https://www.engineeringtoolbox.com/air-absolute-kinematic-viscosity-d_601.html
-air_viscosity = [1.822 0.0001822] *10^-5; %N*s/m2
+air_viscosity = [1.822 0.0001822] * 10^-5; %N*s/m2
 
 % Tube Dimensions
 tube_diameter = [1.75 0.005] * 0.0254; % in -> m
