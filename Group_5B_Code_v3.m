@@ -13,7 +13,6 @@ room_temp = [21 1]; % C
 %https://en.wikipedia.org/wiki/Room_temperature
 p_atmos = [101.3 1] * 10^3; % Pa
 
-
 % Dynamic viscosity of air
 % SOURCE: https://www.engineeringtoolbox.com/air-absolute-kinematic-viscosity-d_601.html
 air_viscosity = [1.822 0.0001822] * 10^-5; %N*s/m2
@@ -50,8 +49,8 @@ for m = 1:n_pts
     terminal_velocity(m,2) = modelTube(carrier_length(m),system_parameters,false);
     
     % Initialize variables for storing variations caused by each parameter
-    max_error = 0;
-    min_error = 0;
+    upper_bound_error = 0;
+    lower_bound_error = 0;
     
     % For each system parameter ...
     for n = 1:length(system_parameters)
@@ -66,19 +65,25 @@ for m = 1:n_pts
         temp_params(n) = system_parameters(n) - system_variations(n);
         temp_error_2 = modelTube(carrier_length(m),temp_params,false) - terminal_velocity(m,2);
         
-        if (abs(temp_error_1) > abs(temp_error_2))
-            max_error = max_error + temp_error_1^2;
-            min_error = min_error + temp_error_2^2;
+        % Check what direction the estimate changes for each direction of parameter change
+        % If temp_error_1 is larger, then ...
+        %     parameter + variation = a larger terminal velocity estimate
+        % If temp_error_2 is larger, then ...
+        %     parameter + variation = a smaller terminal velocity estimate
+        % Based on this, add the errors for that parameter to the upper and lower bounds accordingly
+        if (temp_error_1 > temp_error_2)
+            upper_bound_error = upper_bound_error + temp_error_1^2;
+            lower_bound_error = lower_bound_error + temp_error_2^2;
         else
-            max_error = max_error + temp_error_2^2;
-            min_error = min_error + temp_error_1^2;
+            upper_bound_error = upper_bound_error + temp_error_2^2;
+            lower_bound_error = lower_bound_error + temp_error_1^2;
         end
     end
 
     % Calculate the error bounds for this vacuum pressure
     % Apply square root of RSS combination here
-    terminal_velocity(m,1) = terminal_velocity(m,2) + sqrt(min_error);
-    terminal_velocity(m,3) = terminal_velocity(m,2) - sqrt(max_error);
+    terminal_velocity(m,1) = terminal_velocity(m,2) - sqrt(lower_bound_error);
+    terminal_velocity(m,3) = terminal_velocity(m,2) + sqrt(upper_bound_error);
 end
 
 %% PLOTTING
