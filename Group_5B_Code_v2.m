@@ -66,7 +66,7 @@ for m = 1:n_pts
         temp_params(n) = system_parameters(n) - system_variations(n);
         temp_error_2 = modelTube(carrier_length(m),temp_params,false) - terminal_velocity(m,2);
         
-        if (abs(temp_error_1) > abs(temp_error_2))
+        if (temp_error_1) < 0 && (temp_error_2) > 0
             max_error = max_error + temp_error_1^2;
             min_error = min_error + temp_error_2^2;
         else

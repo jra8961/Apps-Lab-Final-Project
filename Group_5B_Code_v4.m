@@ -8,9 +8,9 @@ clc; clear; close all;
 %% PHYSICAL CONSTANTS
 % USE FORMAT : [estimate_value uncertainty]
 
-% Room Temp and Atmospheric Pressure Air
-room_temp = [21 1]; % C
-%https://en.wikipedia.org/wiki/Room_temperature
+% Sea-level density and Atmospheric Pressure
+%https://www.earthdata.nasa.gov/topics/atmosphere/atmospheric-pressure/air-mass-density#:~:text=Pure%2C%20dry%20air%20has%20a,a%20pressure%20of%20101.325%20kPa.
+air_density = [1.293 0.01]; % kg/m3
 p_atmos = [101.3 1] * 10^3; % Pa
 
 % Dynamic viscosity of air
@@ -23,7 +23,7 @@ tube_length = [48 0.5] * 0.0254; % in -> m
 
 % Carrier Dimensions
 carrier_diameter = [1.735 0.002] * 0.0254; % in -> m
-carrier_mass = [0.250 0.001]; % kg
+carrier_mass = [0.250 0.005]; % kg
 min_carrier_length = 0.04; % m
 max_carrier_length = 0.16; % m
 
@@ -36,11 +36,11 @@ terminal_velocity = zeros(n_pts,3);
 carrier_length = linspace(min_carrier_length,max_carrier_length,n_pts); % kPa
 
 % Store all physical parameters in an array to make it easy to pass into function
-system_parameters = [room_temp(1), p_atmos(1), air_viscosity(1), tube_diameter(1), tube_length(1), ...
+system_parameters = [air_density(1), p_atmos(1), air_viscosity(1), tube_diameter(1), tube_length(1), ...
     carrier_diameter(1), carrier_mass(1)];
 
 % Store all variations in system parameters for easy access during loop
-system_variations = [room_temp(2), p_atmos(2), air_viscosity(2), tube_diameter(2), tube_length(2), ...
+system_variations = [air_density(2), p_atmos(2), air_viscosity(2), tube_diameter(2), tube_length(2), ...
     carrier_diameter(2), carrier_mass(2)];
 
 % Loop for each carrier length
@@ -104,23 +104,11 @@ legend("Estimated Results", "Min Uncertainty Bound", "Max Uncertainty Bound");
 legend("Location","southeast");
 
 %% FUNCTIONS
-% Calculate density of air as a function of temperature and pressure using ideal gas law
-% INPUTS:
-%  * pres_Pa = absolute pressure in Pascals (N/m^2)
-%  * temp_C  = temperature in Celcius
-% OUTPUTS:
-%  * density = density of dry air in kg/m^3
-function [density] = calcAirDensity(pres_Pa, temp_C)
-    % p*V = m*R_specific*T --> m/V = p / (R_specific * T)
-    R_specific = 287.05; % J / (kg * K) - for dry air
-    density = pres_Pa ./ (R_specific .* (temp_C + 273.15));
-end
-
 % Use Euler's Method to solve for velocity of the carrier over time
 % INPUTS :
 %  * length : length of the carrier [m]
 %  * sys_params : all relevant physical parameters of the launcher
-%       1 - room_T : room temperature [in C]
+%       1 - room_density : density of dry, sea-level air [kg/m^3]
 %       2 - p_atm : atmospheric pressure [in Pa or N/m^2]
 %       3 - viscosity : dynamic visocity of air [in N*s/m^2]
 %       4 - tube_diam : inner diameter of the tube [in m]
@@ -137,7 +125,7 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
     g = 9.81; % m/s^2 
     
     % Extract parameters from input vector
-    room_T = sys_params(1);
+    room_density = sys_params(1);
     p_atm = sys_params(2);
     viscosity = sys_params(3);
     tube_diam = sys_params(4);
@@ -148,9 +136,6 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
 % CALCULATED CONSTANTS  
     % Gap between the carrier and tube
     air_gap = (tube_diam - carrier_diam) / 2;
-
-    % Density of air at room temperature and atmospheric pressure
-    room_density = 1.293; %kg/m3
 
 % TIME DEPENDENT VARIABLES
     n_steps = 5000; % Number of steps in the loop
@@ -242,28 +227,10 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
     if printing
         figure();
         
-        % Plot position of carrier
-        subplot(3,1,1);
-        plot(time,position);
-        % Make plot look pretty
-        grid on;
-        xlabel("Time [s]"); ylabel("Position [m]");
-        title("Carrier Position");
-
         % Plot velocity of the carrier
-        subplot(3,1,2);
         plot(time, carrier_velocity);
         % Make plot look pretty
         grid on;
         xlabel("Time [s]"); ylabel("Velocity [m/s]");
-        title("Carrier Velocity");
-
-        % Plot another thing - You decide!
-        subplot(3,1,3);
-        plot(time,accel);
-        % Make plot look pretty
-        grid on;
-        xlabel("Time [s]"); ylabel("m/s2"); 
-        title("Carrier Acceleration");
     end
 end
