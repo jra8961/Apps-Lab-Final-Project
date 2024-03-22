@@ -18,7 +18,7 @@ p_atmos = [101.3 1] * 10^3; % Pa
 air_viscosity = [1.822 0.0001822] * 10^-5; %N*s/m2
 
 % Tube Dimensions
-tube_diameter = [1.75 0.005] * 0.0254; % in -> m
+tube_diameter = [1.772 0.003] * 0.0254; % in -> m
 tube_length = [48 0.5] * 0.0254; % in -> m
 
 % Carrier Dimensions
@@ -139,7 +139,7 @@ function [term_vel] = modelTube(carrier_len, sys_params, printing)
 
 % TIME DEPENDENT VARIABLES
     n_steps = 5000; % Number of steps in the loop
-    delta_t = 0.0001;  % Amount of time between each step
+    delta_t = 0.00006;  % Amount of time between each step
 
     time = zeros(n_steps,1);
     position = zeros(n_steps,1);
